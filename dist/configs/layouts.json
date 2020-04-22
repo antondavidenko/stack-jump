@@ -1,0 +1,10 @@
+{
+  "gameField": {
+    "player": {"x":550, "y":1550}
+  },
+  "hud": {
+    "info_label": {"x":550, "y":100},
+    "auto_button": {"x":270, "y":200},
+    "install_button": {"x":810, "y":200}
+  }
+}

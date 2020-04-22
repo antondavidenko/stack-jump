@@ -1,0 +1,12 @@
+{
+  "iOSInstall": "https://itunes.apple.com/us/app/stack-jump/id1263426717?mt=8",
+  "AndroidInstall": "https://play.google.com/store/apps/details?id=io.voodoo.stackjump&hl=en",
+
+  "playerJumpVelocity": 1500,
+
+  "platformSpeed": 500,
+  "platformSpawnXRight": 1250,
+  "platformSpawnXLeft": -150,
+  "platformSpawnY": 1550,
+  "platformDeltaUp": 240
+}
