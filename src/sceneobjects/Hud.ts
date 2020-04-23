@@ -43,7 +43,12 @@ export class Hud {
         if (this.checkPlatform(isAndroid) || this.checkPlatform(isIOS)) {
             let instalURL = this.checkPlatform(isIOS) ? this.gameConfig.iOSInstall : this.gameConfig.AndroidInstall;
             this.createButton(this.layouts.hud.install_button, () => {
-                window.open(instalURL, '_blank');
+                let dapi = (window as any).dapi;
+                if (dapi === undefined) {
+                    window.open(instalURL, '_blank');
+                } else {
+                    dapi.openStoreUrl();
+                }
             });
             this.createText(install, this.layouts.hud.install_button);
         }
