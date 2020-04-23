@@ -1,6 +1,5 @@
 import "phaser";
 import { GameScene } from "./scenes/gameScene";
-import { LoaderScene } from "./scenes/LoaderScene";
 
 interface Size {
     width: number;
@@ -29,7 +28,7 @@ const tdGameConfig: any = {
             debug: false
         }
     },
-    scene: [LoaderScene, GameScene]
+    scene: [GameScene]
 };
 
 export class tdOrcsGame extends Phaser.Game {

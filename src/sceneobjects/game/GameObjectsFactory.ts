@@ -1,23 +1,27 @@
 import { ILayouts } from "../../ILayouts";
+import { IGameConfig } from "../../IGameConfig";
 
 const charactersList = ['ch01','ch02','ch03','ch04','ch05'];
 
 function createMovingPlatform(isRight:boolean, spawnY:number): Phaser.Physics.Arcade.Image {
-    let spawnX = isRight ? this.gameConfig.platformSpawnXRight : this.gameConfig.platformSpawnXLeft;
+    let gameConfig:IGameConfig = this.gameConfig;
+    let spawnX = isRight ? gameConfig.platform.spawnXRight : gameConfig.platform.spawnXLeft;
     let result = this.scene.physics.add.image(spawnX, spawnY, 'sprites', 'block').setScale(3);
     this.firstPlanContainer.add(result);
     result.setImmovable(true);
     result.body.allowGravity = false;
-    result.setVelocityX((isRight ? -1 : 1) * this.gameConfig.platformSpeed);
+    result.setVelocityX((isRight ? -1 : 1) * gameConfig.platform.speed);
     return result
 }
 
 export function addPlatform(): Phaser.Physics.Arcade.Image {
+    let scene: Phaser.Scene = this.scene;
+    let gameConfig:IGameConfig = this.gameConfig;
     let isFirstPlatform = this.nextPlatformY === undefined;
-    this.nextPlatformY = isFirstPlatform ? this.gameConfig.platformSpawnY : this.nextPlatformY - this.gameConfig.platformDeltaUp;
+    this.nextPlatformY = isFirstPlatform ? gameConfig.platform.spawnY : this.nextPlatformY - gameConfig.platform.deltaUp;
     let platform = createMovingPlatform.call(this, Math.floor(Math.random() * 2) === 1, this.nextPlatformY);
     platform.noTouchYet = true;
-    this.scene.physics.add.collider(this.player, platform, this.onPlayerContactPlatform.bind(this));
+    scene.physics.add.collider(this.player, platform, this.onPlayerContactPlatform.bind(this));
     return platform;
 }
 
@@ -29,12 +33,13 @@ export function addBackground():void {
 }
 
 export function addGround():void {
-    this.ground = this.scene.physics.add.staticGroup();
-    let groundImage = this.ground.create(this.scene.cameras.main.width / 2, 1800, 'sprites', 'ground').setScale(2).refreshBody();
+    let scene: Phaser.Scene = this.scene;
+    this.ground = scene.physics.add.staticGroup();
+    let groundImage = this.ground.create(scene.cameras.main.width / 2, 1800, 'sprites', 'ground').setScale(2).refreshBody();
     this.firstPlanContainer.add(groundImage);
     for (let i=0; i<40; i++) {
         let positionX = groundImage.width*2*i - groundImage.width*2*20;
-        this.firstPlanContainer.add(this.scene.add.image(positionX, 1800, 'sprites', "ground").setScale(-2,2));
+        this.firstPlanContainer.add(scene.add.image(positionX, 1800, 'sprites', "ground").setScale(-2,2));
     }
 }
 

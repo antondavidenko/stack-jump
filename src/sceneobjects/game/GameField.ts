@@ -5,12 +5,12 @@ import * as CameraEffects from "./CameraEffects";
 
 export class GameField {
 
-    private player;
-    private ground;
+    private player: Phaser.Physics.Arcade.Image;
+    private ground: Phaser.Physics.Arcade.StaticGroup;
     private firstPlanContainer: Phaser.GameObjects.Container;
     private secondPlanContainer: Phaser.GameObjects.Container;
     private nextPlatformY: number;
-    private currentPlatform: Phaser.Physics.Arcade.Image;
+    private currentPlatforms: Phaser.Physics.Arcade.Image[] = [];
     private playerX: number;
     private firstTouch = true;
     private counter = 0;
@@ -51,18 +51,27 @@ export class GameField {
                 this.firstTouch = false;
                 this.onGameStart();
                 setTimeout(() => {
-                    this.currentPlatform = GameObjectsFactory.addPlatform.call(this);
-                }, 2500);
+                    this.addPlatform();
+                }, this.gameConfig.platform.firstTimeSpawnDelay);
             } else if (!this.autoplay) {
                 this.playerJump();
             }
         }
     }
 
+    private addPlatform() {
+        if (this.player.angle === 0) {
+            this.currentPlatforms.push(GameObjectsFactory.addPlatform.call(this));
+            setTimeout(() => {
+                this.addPlatform();
+            }, this.getRandomSpawnDelay());
+        }
+    }
+
     update() {
-        if (this.currentPlatform && this.autoplay && this.player.body.touching.down) {
-            let distance = Math.abs(this.player.x - this.currentPlatform.x);
-            if ( distance < 500 && distance > 350 ) {
+        if (this.currentPlatforms[this.counter] && this.autoplay && this.player.body.touching.down) {
+            let distance = Math.abs(this.player.x - this.currentPlatforms[this.counter].x);
+            if ( distance < this.gameConfig.autoJumpMaxDistance && distance > this.gameConfig.autoJumpMinDistance ) {
                 this.playerJump();
             }
         }
@@ -77,25 +86,35 @@ export class GameField {
         this.onJump();
     }
 
-    private onPlayerContactPlatform(character, platform) {
-        if (platform.noTouchYet) {
-            platform.noTouchYet = false;
+    private onPlayerContactPlatform(player: Phaser.Physics.Arcade.Image, platform: Phaser.Physics.Arcade.Image) {
+        if ((platform as any).noTouchYet) {
+            (platform as any).noTouchYet = false;
             platform.setVelocityX(0);
             this.ground.clear();
             setTimeout(() => {
-                if (Math.abs(character.x - this.playerX) < 15) {
-                    this.playerX = character.x;
-                    CameraEffects.goingUpOnDemand.call(this, character);
-                    this.currentPlatform = GameObjectsFactory.addPlatform.call(this);
-                    this.counter++;
-                    this.onScoreUpdate(this.counter);
-                } else {
-                    this.onFall();
-                    character.setAngularVelocity(250);
-                    CameraEffects.setCameraZoom.call(this);
-                }
+                this.checkJumpSuccess();
             }, 100);
         }
+    }
+
+    private checkJumpSuccess() {
+        let successCriteria = Math.abs(this.player.x - this.playerX) < 15;
+        if (successCriteria) {
+            this.playerX = this.player.x;
+            CameraEffects.goingUpOnDemand.call(this, this.player);
+            this.counter++;
+            this.onScoreUpdate(this.counter);
+        } else {
+            this.onFall();
+            this.player.setAngularVelocity(250);
+            CameraEffects.setCameraZoom.call(this);
+        }
+    }
+
+    private getRandomSpawnDelay():number {
+        let min = this.gameConfig.platform.minSpawnDelay;
+        let max = this.gameConfig.platform.maxSpawnDelay;
+        return Math.random() * (max - min) + min;
     }
 
     setScoreUpdateCallback(callback: (number) => void): void {

@@ -1,3 +1,5 @@
+import { IGameConfig } from "../../IGameConfig";
+
 const baseTween = {
     duration: 600,
     ease: 'Power1'
@@ -17,11 +19,12 @@ function setTargetZoom(zoom:number, zoomAnimation:()=>void):void {
 }
 
 export function goingUpOnDemand(character) {
+    let gameConfig:IGameConfig = this.gameConfig;
     if (character.y < 800) {
-        let targetY = this.firstPlanContainer.y + this.gameConfig.platformDeltaUp;
+        let targetY = this.firstPlanContainer.y + gameConfig.platform.deltaUp;
         firstPlanContainerStartTwen.call(this, {y: targetY});
 
-        let targetY2 = this.secondPlanContainer.y + this.gameConfig.platformDeltaUp/5;
+        let targetY2 = this.secondPlanContainer.y + gameConfig.platform.deltaUp/5;
         secondPlanContainerStartTwen.call(this, {y: targetY2});
     }
 }

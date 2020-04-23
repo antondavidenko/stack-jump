@@ -3,10 +3,22 @@ export interface IGameConfig {
     AndroidInstall: string,
 
     playerJumpVelocity: number;
+    autoJumpMinDistance: number;
+    autoJumpMaxDistance: number;
 
-    platformSpeed: number;
-    platformSpawnXRight: number;
-    platformSpawnXLeft: number;
-    platformSpawnY: number;
-    platformDeltaUp: number;
+    platform: IPlargormConfig;
+
+    gameRestartDelay: number;
+}
+
+export interface IPlargormConfig {
+    firstTimeSpawnDelay: number;
+    minSpawnDelay: number;
+    maxSpawnDelay: number;
+
+    speed: number;
+    spawnXRight: number;
+    spawnXLeft: number;
+    spawnY: number;
+    deltaUp: number;
 }

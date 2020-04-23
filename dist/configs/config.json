@@ -2,11 +2,21 @@
   "iOSInstall": "https://itunes.apple.com/us/app/stack-jump/id1263426717?mt=8",
   "AndroidInstall": "https://play.google.com/store/apps/details?id=io.voodoo.stackjump&hl=en",
 
-  "playerJumpVelocity": 1500,
+  "playerJumpVelocity": 1600,
+  "autoJumpMinDistance": 350,
+  "autoJumpMaxDistance": 450,
 
-  "platformSpeed": 500,
-  "platformSpawnXRight": 1250,
-  "platformSpawnXLeft": -150,
-  "platformSpawnY": 1550,
-  "platformDeltaUp": 240
+  "platform": {
+    "firstTimeSpawnDelay": 2500,
+    "minSpawnDelay": 1200,
+    "maxSpawnDelay": 1200,
+
+    "speed": 500,
+    "spawnXRight": 1230,
+    "spawnXLeft": -150,
+    "spawnY": 1550,
+    "deltaUp": 240
+  },
+
+  "gameRestartDelay": 5000
 }

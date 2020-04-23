@@ -62,8 +62,8 @@ export class GameScene extends Phaser.Scene {
             this.audioPlayer.onFall();
             setTimeout(() => {
                 this.scene.stop("GameScene");
-                this.scene.start("LoaderScene");
-            }, 5000);
+                this.scene.start("GameScene");
+            }, this.gameConfig.gameRestartDelay);
         });
 
         this.hud.onAutoChangeCallback((auto:boolean) => {
