@@ -3,8 +3,10 @@
     "player": {"x":550, "y":1550}
   },
   "hud": {
-    "info_label": {"x":550, "y":100},
+    "info_label": {"x":550, "y":800},
+    "score_label": {"x":550, "y":100},
     "auto_button": {"x":270, "y":200},
-    "install_button": {"x":810, "y":200}
+    "install_button": {"x":810, "y":200},
+    "restart_button": {"x":550, "y":1000}
   }
 }

@@ -51,7 +51,7 @@ export class GameScene extends Phaser.Scene {
 
         this.gameField.setGameStartCallback(() => {
             this.audioPlayer.onGameStart();
-            this.hud.setScore(0);
+            this.hud.onGameStart();
         });
 
         this.gameField.setJumpCallback(() => {
@@ -61,13 +61,18 @@ export class GameScene extends Phaser.Scene {
         this.gameField.setFallCallback(() => {
             this.audioPlayer.onFall();
             setTimeout(() => {
-                this.scene.stop("GameScene");
-                this.scene.start("GameScene");
+                this.hud.onGameEnd();
+                this.gameField.onGameEnd();
             }, this.gameConfig.gameRestartDelay);
         });
 
         this.hud.onAutoChangeCallback((auto:boolean) => {
             this.gameField.setAutoMode(auto);
+        });
+
+        this.hud.onRestartCallback(() => {
+            this.scene.stop("GameScene");
+            this.scene.start("GameScene");
         });
     }
 

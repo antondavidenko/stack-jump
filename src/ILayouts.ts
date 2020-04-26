@@ -9,8 +9,10 @@ export interface IGameField {
 
 export interface IHudLayout {
     info_label: IPoint,
+    score_label: IPoint,
     auto_button: IPoint,
-    install_button: IPoint
+    install_button: IPoint,
+    restart_button: IPoint
 };
 
 export interface IPoint {

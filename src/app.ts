@@ -1,7 +1,7 @@
 import "phaser";
 import { GameScene } from "./scenes/gameScene";
 
-let dapi = (window as any).dapi;
+let dapi;
 
 interface Size {
     width: number;
@@ -40,46 +40,47 @@ export class tdOrcsGame extends Phaser.Game {
 }
 
 window.onload = () => {
+    dapi = (window as any).dapi;
     let game = new tdOrcsGame();
     if (dapi !== undefined) {
         (dapi.isReady()) ? onReadyCallback() : dapi.addEventListener("ready", onReadyCallback);
     }
 };
 
-function onReadyCallback(){
-	//no need to listen to this event anymore
-	dapi.removeEventListener("ready", onReadyCallback);
+function onReadyCallback() {
+    //no need to listen to this event anymore
+    dapi.removeEventListener("ready", onReadyCallback);
     let isAudioEnabled = !!dapi.getAudioVolume();
 
-	if(dapi.isViewable()){
-		adVisibleCallback({isViewable: true});
-	}
+    if (dapi.isViewable()) {
+        adVisibleCallback({ isViewable: true });
+    }
 
-	dapi.addEventListener("viewableChange", adVisibleCallback);
-	dapi.addEventListener("adResized", adResizeCallback);
-      dapi.addEventListener("audioVolumeChange",         audioVolumeChangeCallback);
+    dapi.addEventListener("viewableChange", adVisibleCallback);
+    dapi.addEventListener("adResized", adResizeCallback);
+    dapi.addEventListener("audioVolumeChange", audioVolumeChangeCallback);
 }
 
-function adVisibleCallback(event){
-	console.log("isViewable " + event.isViewable);
-	if (event.isViewable){
-		let screenSize = dapi.getScreenSize();
-		//START or RESUME the ad
-	} else {
-		//PAUSE the ad and MUTE sounds
-	}
+function adVisibleCallback(event) {
+    console.log("isViewable " + event.isViewable);
+    if (event.isViewable) {
+        let screenSize = dapi.getScreenSize();
+        //START or RESUME the ad
+    } else {
+        //PAUSE the ad and MUTE sounds
+    }
 }
 
-function adResizeCallback(event){
-	let screenSize = event;
-	console.log("ad was resized width " + event.width + " height " + event.height);
+function adResizeCallback(event) {
+    let screenSize = event;
+    console.log("ad was resized width " + event.width + " height " + event.height);
 }
 
-function audioVolumeChangeCallback(volume){
-	let isAudioEnabled = !!volume;
-	if (isAudioEnabled){
-		//START or turn on the sound
-	} else {
-		//PAUSE the turn off the sound
-	}
+function audioVolumeChangeCallback(volume) {
+    let isAudioEnabled = !!volume;
+    if (isAudioEnabled) {
+        //START or turn on the sound
+    } else {
+        //PAUSE the turn off the sound
+    }
 }

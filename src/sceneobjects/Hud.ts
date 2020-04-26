@@ -7,13 +7,19 @@ const hudTextStyle = {
     color: '#002844'
 };
 
-const scoreSuffix = "SCORE : ";
-const startapText = "TAP !";
+const infoTextFontSize = 120;
+const textColorRed = '#990000';
+const textColorGreen = '#00ee00';
 
-const auto_on = "AUTO ON";
-const auto_off = "AUTO OFF";
+const scoreSuffixLabel = "SCORE : ";
+const startapTextLabel = "TAP !";
+const endTextLabel = "WASTED!";
 
-const install = "INSTALL";
+const autoOnLabel = "AUTO [ ]";
+const autoOffLabel = "AUTO [V]";
+
+const installLabel = "INSTALL";
+const restartLabel = "RESTART";
 
 const isAndroid = /Android/i;
 const isIOS = /iPad|iPhone|iPod/i;
@@ -22,9 +28,14 @@ export class Hud {
 
     private hudContainer: Phaser.GameObjects.Container;
     private scoreText: Phaser.GameObjects.Text;
-    private autoText: Phaser.GameObjects.Text;
+    private infoText: Phaser.GameObjects.Text;
+    private autoButtonText: Phaser.GameObjects.Text;
+    private autoButton: Phaser.GameObjects.Image;
+    private restartButtonText: Phaser.GameObjects.Text;
+    private restartButton: Phaser.GameObjects.Image;
     private auto: boolean = false;
     private autoChangeCallback: (boolean) => void;
+    private restartCallback: () => void;
 
     constructor(
         private scene: Phaser.Scene,
@@ -34,10 +45,16 @@ export class Hud {
     create(): Hud {
         this.hudContainer = this.scene.add.container(0, 0);
 
-        this.createButton(this.layouts.hud.auto_button, () => {
+        this.autoButton = this.createButton(this.layouts.hud.auto_button, () => {
             this.auto = !this.auto;
-            this.autoText.text = this.auto ? auto_off : auto_on;
+            this.autoButtonText.text = this.auto ? autoOffLabel : autoOnLabel;
+            let color =  this.auto ? textColorGreen : hudTextStyle.color;
+            this.autoButtonText.setColor(color);
             this.autoChangeCallback(this.auto);
+        });
+
+        this.restartButton = this.createButton(this.layouts.hud.restart_button, () => {
+            this.restartCallback();
         });
 
         if (this.checkPlatform(isAndroid) || this.checkPlatform(isIOS)) {
@@ -50,44 +67,71 @@ export class Hud {
                     dapi.openStoreUrl();
                 }
             });
-            this.createText(install, this.layouts.hud.install_button);
+            this.createText(installLabel, this.layouts.hud.install_button);
         }
 
-        this.scoreText = this.createText(startapText, this.layouts.hud.info_label);
-        this.autoText = this.createText(auto_on, this.layouts.hud.auto_button);
+        this.scoreText = this.createText("", this.layouts.hud.score_label);
+        this.infoText = this.createText(startapTextLabel, this.layouts.hud.info_label);
+        this.infoText.setFontSize(infoTextFontSize);
+        this.autoButtonText = this.createText(autoOnLabel, this.layouts.hud.auto_button);
+        this.restartButtonText = this.createText(restartLabel, this.layouts.hud.restart_button);
+
+        this.setRestartButtonVisible(false);
 
         return this;
     }
 
     setScore(score: number): void {
-        this.scoreText.text = scoreSuffix + score;
+        this.scoreText.text = scoreSuffixLabel + score;
     }
 
     private createText(label: string = "", position: { x: number, y: number }): Phaser.GameObjects.Text {
-        let x = position.x;
-        let y = position.y;
-        let text = this.scene.add.text(x, y, label, hudTextStyle);
+        let text = this.scene.add.text(position.x, position.y, label, hudTextStyle);
         text.setOrigin(0.5, 0.5);
         this.hudContainer.add(text);
         return text;
     }
 
-    private createButton(position: IPoint, callback: () => void): void {
+    private createButton(position: IPoint, callback: () => void): Phaser.GameObjects.Image {
         let button = this.scene.add.image(position.x, position.y, 'sprites', 'block').setScale(4, 1.5);
         this.hudContainer.add(button);
         button.setInteractive();
         button.on('pointerdown', (() => {
             callback();
         }).bind(this));
+        return button;
     }
 
     onAutoChangeCallback(callback: (boolean) => void): void {
         this.autoChangeCallback = callback;
     }
+    
+    onRestartCallback(callback: () => void): void {
+        this.restartCallback = callback;
+    }
 
-    checkPlatform(platform: string | RegExp): boolean {
+    private checkPlatform(platform: string | RegExp): boolean {
         var UA = window.navigator.userAgent;
         return !!UA.match(platform);
+    }
+
+    private setRestartButtonVisible(visible:boolean): void {
+        this.restartButtonText.visible = visible;
+        this.restartButton.visible = visible;
+    }
+
+    onGameStart() {
+        this.setScore(0);
+        this.infoText.text = "";
+    }
+
+    onGameEnd() {
+        this.infoText.setColor(textColorRed);
+        this.infoText.text = endTextLabel;
+        this.setRestartButtonVisible(true);
+        this.autoButtonText.visible = false;
+        this.autoButton.visible = false;
+        this.scoreText.setColor(textColorRed);
     }
 
 }

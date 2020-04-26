@@ -14,7 +14,8 @@ export class GameField {
     private playerX: number;
     private firstTouch = true;
     private counter = 0;
-    private autoplay:boolean = false;
+    private autoplay: boolean = false;
+    private fadeEffect: Phaser.GameObjects.Graphics;
 
     private onScoreUpdate: (number) => void;
     private onGameStart: () => void;
@@ -24,7 +25,7 @@ export class GameField {
     constructor(
         private scene: Phaser.Scene,
         private gameConfig: IGameConfig,
-        private layouts: ILayouts) {}
+        private layouts: ILayouts) { }
 
     create(): GameField {
         this.secondPlanContainer = this.scene.add.container(0, 0);
@@ -36,11 +37,18 @@ export class GameField {
 
         this.scene.physics.add.collider(this.player, this.ground);
 
-        let button = this.scene.add.image(0, 0, 'sprites', 'invisible-block').setScale(10, 50).setOrigin(0, 0);
+        let button = this.scene.add.image(0, 0, 'sprites', 'invisible-block').setOrigin(0, 0);
+        button.width = this.scene.cameras.main.width;
+        button.height = this.scene.cameras.main.height;
         button.setInteractive();
         button.on('pointerdown', (() => {
             this.onTap.call(this);
         }).bind(this));
+
+        this.fadeEffect = this.scene.add.graphics();
+        this.fadeEffect.fillStyle(0x000000, 0.75);
+        this.fadeEffect.fillRect(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height);
+        this.fadeEffect.visible = false;
 
         return this;
     }
@@ -71,7 +79,7 @@ export class GameField {
     update() {
         if (this.currentPlatforms[this.counter] && this.autoplay && this.player.body.touching.down) {
             let distance = Math.abs(this.player.x - this.currentPlatforms[this.counter].x);
-            if ( distance < this.gameConfig.autoJumpMaxDistance && distance > this.gameConfig.autoJumpMinDistance ) {
+            if (distance < this.gameConfig.autoJumpMaxDistance && distance > this.gameConfig.autoJumpMinDistance) {
                 this.playerJump();
             }
         }
@@ -111,7 +119,7 @@ export class GameField {
         }
     }
 
-    private getRandomSpawnDelay():number {
+    private getRandomSpawnDelay(): number {
         let min = this.gameConfig.platform.minSpawnDelay;
         let max = this.gameConfig.platform.maxSpawnDelay;
         return Math.random() * (max - min) + min;
@@ -131,6 +139,10 @@ export class GameField {
 
     setFallCallback(callback: () => void): void {
         this.onFall = callback;
+    }
+
+    onGameEnd() {
+        this.fadeEffect.visible = true;
     }
 
 }
